@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{ current_product }}</title>
+</head>
+<body>
+Продукт: {{ current_product }}<br>
+Категория: {{ current_product.product_category }}<br>
+Описание: {{ current_product.product_des }}<br>
+Кол-во продукта на складе: {{ current_product.product_count }}<br>
+
+<form method="POST" action="/add_to_cart/{{ current_product }}">
+    {% csrf_token %}
+    <input type="number" min="1" value="" name="pr_count">
+    <button>Добавить в корзину</button>
+</form>
+<button><a href="/">В главную страницу</a></button>
+</body>
+</html>
