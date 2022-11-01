@@ -7,30 +7,22 @@ bot = telebot.TeleBot('5619814545:AAHWeh6Ts34UeQ4MDhWaPA5qSTsM_m9pl8Q')
 
 
 def home_page(request):
-    return render(request, 'main_page.html')
-
-
-# получить все товары из базы и вывод
-def get_all_products(request):
     all_products = models.Product.objects.all()
-    return render(request, 'all_products.html', {'all_products': all_products})
-
-
-def categories(request):
     all_categories = models.Category.objects.all()
-    return render(request, 'index.html', {'all_categories': all_categories})
+    return render(request, 'index.html', {'products': all_products, 'categories': all_categories})
 
 
 def get_exact_product(request, pk):
     current_product = models.Product.objects.get(product_name=pk)
-    return render(request, 'current_product.html', {'current_product' : current_product})
+    return render(request, 'about_product.html', {'product': current_product})
 
 
 def get_exact_category(request, pk):
-    current_category = models.Category.objects.get(category_name=pk)
-    category_products = models.Product.objects.filter(product_category=current_category)
-    category_name = current_category
-    return render(request, 'category_items.html', {'category_items' : category_products, 'category_name' : category_name})
+    all_categories = models.Category.objects.all()
+    category_name = models.Category.objects.get(category_name=pk)
+    category_products = models.Product.objects.filter(product_category=category_name)
+    return render(request, 'category_products.html', {'products_in_category': category_products, 'category_name': category_name,
+                                                      'categories': all_categories, 'products': category_products})
 
 
 def search_exact_product(request):
@@ -57,7 +49,10 @@ def add_product_to_user_cart(request, pk):
 
 def user_cart(request):
     cart = models.UserCart.objects.filter(user_id=request.user.id)
-    return render(request, 'cart.html', {'cart_objects': cart})
+    user_total = 0
+    for i in cart:
+        user_total += i.user_product.product_price * i.user_product_quantity
+    return render(request, 'user_cart.html', {'cart': cart, 'user_total': user_total})
 
 def delete_exact_user_cart(request, pk):
     product_to_delete = models.Product.objects.get(product_name=pk)
